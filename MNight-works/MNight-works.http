@@ -1,0 +1,6 @@
+@MNight_works_HostAddress = http://localhost:5185
+
+GET {{MNight_works_HostAddress}}/WeatherForecast
+Accept: application/json
+
+###
