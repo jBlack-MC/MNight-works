@@ -18,6 +18,11 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+//if someone visits the boot URL,automatically serve index.html
+app.UseDefaultFiles();
+//allows serving plain files (html, css, js) from a folder called wwwroot 
+app.UseStaticFiles();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

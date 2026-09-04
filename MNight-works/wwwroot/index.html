@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>MNightWorks Tavern -Menu</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h2>Add a New Item</h2>
+    <form id="add-item-form">
+        <input type="text" id="name-input" placeholder="Item name" required />
+        <input type="text" id="description-input" placeholder="Description" />
+        <input type="text" id="price-input" placeholder="Price" step="0.01" required />
+        <button type="submit">Add Item</button>
+    </form>
+
+    <h1>Our Menu</h1>
+
+    <!--Empty for now - javaScript will be fill this in once the menu data arrives -->
+    <div id="menu-list">
+        adding menu.....
+    </div>
+
+    <!--"defer" means: wait until all the html above has loaded before running this script, so it doesnt try to grab
+        #menu-list before that element even exists yet-->
+    <script src="script.js" defer></script>
+
+</body>
+</html>

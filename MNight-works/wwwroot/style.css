@@ -1,0 +1,36 @@
+﻿body {
+    font-family: sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.menu-item {
+    display: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+.menu-item h3 {
+    margin: 0 0 4px 0;
+}
+
+.price {
+    font-weight: bold;
+    color: #2a7a2a;
+}
+
+#add-item-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 300px;
+    margin-bottom: 32px;
+}
+
+    #add-item-form input,
+    #add-item-form button {
+        padding: 8px;
+        font-size: 1rem;
+    }
