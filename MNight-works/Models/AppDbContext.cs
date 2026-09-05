@@ -1,6 +1,6 @@
 ﻿// Target framework for the project: .NET 10.0
 using Microsoft.EntityFrameworkCore;
-using MNight_works.Models;
+using MNightWorks.Shared.Models;
 
 namespace MNight_works.Models
 {

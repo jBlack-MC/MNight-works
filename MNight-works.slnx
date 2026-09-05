@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="MNight-works/MNight-works.csproj" />
+  <Project Path="MNightWorks.Mobile/MNightWorks.Mobile.csproj" Id="9c21da77-1714-4826-a247-ec8b1e6a7bb9" />
   <Project Path="MNightWorks.Shared/MNightWorks.Shared.csproj" Id="9fb2994a-3eb1-4e5d-ae39-8240ca3d7aba" />
 </Solution>

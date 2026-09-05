@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MNight_works.Models;
+using MNightWorks.Shared.Models;
+
 
 namespace MNight_works.Controllers
 {
