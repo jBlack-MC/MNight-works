@@ -1,5 +1,7 @@
 # MNight-works
 
+Last updated: 2026-09-06
+
 Hybrid solution with an ASP.NET Core backend and a .NET MAUI mobile client.
 
 Summary
