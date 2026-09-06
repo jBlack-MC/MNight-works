@@ -50,3 +50,24 @@ Contact
 -------
 For project questions, open an issue in the repository.
 
+Security: connection strings and secrets
+--------------------------------------
+- Do not commit real database credentials or connection strings to source control. The backend appsettings.json contains a placeholder for DefaultConnection.
+- Use dotnet user-secrets for local development or environment variables in production. Example (in project directory):
+
+  dotnet user-secrets init
+  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=...;Database=...;Username=...;Password=..."
+
+Ignoring local database artifacts
+--------------------------------
+- If you use a local SQLite database for development, exclude temporary WAL/SHM files from the repo. Add these lines to .gitignore if they are not already present:
+
+  # SQLite temporary files
+  *.db-wal
+  *.db-shm
+
+Recommended next steps
+----------------------
+- Add your Postgres connection string to user-secrets or environment variables rather than appsettings.json.
+- Remove any committed WAL/SHM files from the repository history if they contain sensitive data using git rm and then commit.
+
