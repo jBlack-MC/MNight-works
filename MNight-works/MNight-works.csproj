@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>MNight_works</RootNamespace>
+    <UserSecretsId>ce417693-9afd-4b90-8d73-59390ad30171</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +19,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Scalar.AspNetCore" Version="2.17.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.17.2" />
   </ItemGroup>
 
   <ItemGroup>
