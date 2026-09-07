@@ -1,8 +1,16 @@
 # MNight-works
 
-Last updated: 2026-09-06
+Last updated: 2026-09-07
 
 Hybrid solution with an ASP.NET Core backend and a .NET MAUI mobile client.
+
+Overview
+--------
+This repository contains a backend Web API and a cross-platform mobile client:
+
+- MNight-works: ASP.NET Core Web API project
+- MNightWorks.Shared: shared models used by both backend and client
+- MNightWorks.Mobile: .NET MAUI mobile application (Android, iOS, MacCatalyst, Windows)
 
 Summary
 -------
@@ -16,12 +24,13 @@ Prerequisites
 - Visual Studio 2026 with .NET MAUI and ASP.NET workloads
 - Platform toolchains for target platforms (Android SDK, Xcode/macOS for iOS/MacCatalyst, Windows desktop workload)
 
+
 Quick start (Visual Studio)
 ---------------------------
 1. Open MNight-works.slnx in Visual Studio 2026.
 2. Restore NuGet packages if prompted.
-3. Start the backend (MNight-works) to run the API.
-4. Start the mobile client (MNightWorks.Mobile) on an emulator or device.
+3. Set the startup project to MNight-works and run to start the API.
+4. Start MNightWorks.Mobile from Visual Studio targeting an emulator or device.
 
 CLI: build & run backend
 ------------------------
@@ -31,8 +40,20 @@ dotnet run --project "MNight-works"
 
 Connecting the mobile client
 ----------------------------
-- Configure API endpoint URLs used by the mobile app before running so the client can reach the backend (see configuration files or source constants in MNightWorks.Mobile).
-- Prefer running the MAUI client from Visual Studio for emulator/device deployment.
+Configure the API endpoint used by the mobile app so it can reach the backend. For local development prefer running the backend and the mobile client on the same machine or use a reachable network endpoint (emulator host loopback varies by platform).
+
+Configuration and secrets
+-------------------------
+- Do not commit real credentials to source control. The file MNight-works/appsettings.json contains a placeholder connection string.
+- For local development use dotnet user-secrets (recommended) or environment variables. Example:
+
+  dotnet user-secrets init
+  dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=...;Database=...;Username=...;Password=..."
+
+Platform notes
+--------------
+- The MAUI project is easiest to run from Visual Studio because emulators and device deployment are integrated.
+- When testing mobile-to-local API calls, verify emulator networking rules: Android emulators may use 10.0.2.2 (emulator) to reach the host, Windows apps can use localhost, etc.
 
 Local data and database files
 ----------------------------
@@ -60,9 +81,10 @@ Security: connection strings and secrets
   dotnet user-secrets init
   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=...;Database=...;Username=...;Password=..."
 
+
 Ignoring local database artifacts
 --------------------------------
-- If you use a local SQLite database for development, exclude temporary WAL/SHM files from the repo. Add these lines to .gitignore if they are not already present:
+If you use a local SQLite database for development, exclude temporary WAL/SHM files from the repo. Add these lines to .gitignore if they are not already present:
 
   # SQLite temporary files
   *.db-wal
