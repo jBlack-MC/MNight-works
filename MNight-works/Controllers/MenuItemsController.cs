@@ -52,34 +52,28 @@ namespace MNight_works.Controllers
         }
 
         [HttpPut("{id}")]
-        //PUT: api/restaurants/{restaurantId}/menuitems/{id}
-        //"PUT" is the HTTP method conventionally used for "Replace this entire item with new data"
         public async Task<IActionResult> Update(int restaurantId, int id, MenuItem updateItem)
         {
-            // Sanity check: the id in the URL should match the id inside the JSON body being sent
             if (id != updateItem.Id)
             {
                 return BadRequest();
             }
 
-            // Ensure the item is associated with the restaurant in the URL
+            // Confirm this item actually belongs to the restaurant in the URL
+            // BEFORE allowing any change — otherwise a mismatched restaurantId
+            // could silently move another restaurant's item.
+            var existingItem = await _context.MenuItems
+                .FirstOrDefaultAsync(m => m.Id == id && m.RestaurantId == restaurantId);
+
+            if (existingItem == null) return NotFound();
+
+            // Ensure the updated item is associated with the restaurant in the URL
             updateItem.RestaurantId = restaurantId;
 
-            // Tell EF Core "treat this object as changed" so it knows to write it on save
-            _context.Entry(updateItem).State = EntityState.Modified;
+            // Copy the new values onto the tracked entity rather than attaching a detached one
+            _context.Entry(existingItem).CurrentValues.SetValues(updateItem);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                // Item may have been deleted or moved to another restaurant
-                var stillExists = await _context.MenuItems.AnyAsync(m => m.Id == id && m.RestaurantId == restaurantId);
-                if (!stillExists) return NotFound();
-                throw;
-            }
-
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
