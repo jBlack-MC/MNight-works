@@ -7,7 +7,7 @@ using MNightWorks.Shared.Models;
 namespace MNight_works.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/restaurants/{restaurantId}/menuitems")]
     public class MenuItemsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -16,72 +16,85 @@ namespace MNight_works.Controllers
         {
             _context = context;
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MenuItem>> GetById(int id)
+        [HttpGet]
+        public async Task<ActionResult<List<MenuItem>>> GetAll(int restaurantId)
         {
-            var item = await _context.MenuItems.FindAsync(id);
+            // .Where(...) filters the query itself — only rows matching this
+            // restaurant ever get pulled from the database, not filtered afterward.
+            return await _context.MenuItems
+                .Where(item => item.RestaurantId == restaurantId)
+                .ToListAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<MenuItem>> GetById(int restaurantId, int id)
+        {
+            var item = await _context.MenuItems
+                .Where(m => m.RestaurantId == restaurantId)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (item == null) return NotFound();
             return item;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<MenuItem>>> GetAll()
-        {
-            return await _context.MenuItems.ToListAsync();
-        }
-
         [HttpPost]
-        public async Task<ActionResult<MenuItem>> Create(MenuItem newItem)
+        public async Task<ActionResult<MenuItem>> Create(int restaurantId, MenuItem newItem)
         {
+            // Force the item to belong to whichever restaurant is in the URL,
+            // regardless of what the request body says — the URL is the
+            // source of truth for which restaurant this is.
+            newItem.RestaurantId = restaurantId;
+
             _context.MenuItems.Add(newItem);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = newItem.Id }, newItem);
+            return CreatedAtAction(nameof(GetById), new { restaurantId, id = newItem.Id }, newItem);
 
         }
 
         [HttpPut("{id}")]
-        //PUT: api/MenuItems/5
+        //PUT: api/restaurants/{restaurantId}/menuitems/{id}
         //"PUT" is the HTTP method conventionally used for "Replace this entire item with new data"
-        public async Task <IActionResult> Update(int id, MenuItem updateItem)
+        public async Task<IActionResult> Update(int restaurantId, int id, MenuItem updateItem)
         {
-            //Sanity check: the id in the URL should match the id inside the JSON body being sent 
-            //if someone send mismatched data ids,that a malformed request, not a dabase problem.
+            // Sanity check: the id in the URL should match the id inside the JSON body being sent
             if (id != updateItem.Id)
             {
-                //Http 400 - "your request doesnt make sense as written
                 return BadRequest();
             }
 
-            //Tell EF core "treat this object as changed" so it knows to write it on save
+            // Ensure the item is associated with the restaurant in the URL
+            updateItem.RestaurantId = restaurantId;
+
+            // Tell EF Core "treat this object as changed" so it knows to write it on save
             _context.Entry(updateItem).State = EntityState.Modified;
 
             try
             {
-                //actually writes the changes to rasturant.db
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                //this only happens in a rare edge case: item got deleted by someone/something
-                //elsein between you loading it and saving your chnage
-                var stillExists = await _context.MenuItems.AnyAsync(m => m.Id == id);
-                if (!stillExists) return NotFound(); //it genuinely got gone
-                throw; //something else went - let it surface as a real error instead of hiding it
+                // Item may have been deleted or moved to another restaurant
+                var stillExists = await _context.MenuItems.AnyAsync(m => m.Id == id && m.RestaurantId == restaurantId);
+                if (!stillExists) return NotFound();
+                throw;
             }
 
-            return NoContent(); //Http 204 - "It worked, and there nothing new hand back to you
+            return NoContent();
         }
 
-        //DELETE: api/MenuItems/5
+        //DELETE: api/restaurants/{restaurantId}/menuitems/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int restaurantId, int id)
         {
-            var item = await _context.MenuItems.FindAsync(id);
-            //cant delete something that was never there
+            var item = await _context.MenuItems
+                .Where(m => m.RestaurantId == restaurantId)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (item == null) return NotFound();
 
-            _context.MenuItems.Remove(item); //mark it for removal
-            await _context.SaveChangesAsync(); //actually remove the row from resturant.db
+            _context.MenuItems.Remove(item);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
