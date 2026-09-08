@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MNightWorks.Shared;
+using System.Text.Json.Serialization;
 
 namespace MNightWorks.Shared.Models
 {
@@ -20,6 +21,11 @@ namespace MNightWorks.Shared.Models
 
         // The navigation property: lets C# code write menuItem.Restaurant.Name
         // instead of manually looking up the restaurant by RestaurantId yourself.
+        // Tells the JSON serializer to never include this property in responses.
+        // We already have RestaurantId as a plain number for "which restaurant" —
+        // we rarely need the whole nested Restaurant object echoed back too,
+        // and skipping it removes the cycle problem at the source.
+        [JsonIgnore]
         public Restaurant? Restaurant { get; set; }
     }
 }
