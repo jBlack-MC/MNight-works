@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
+using System.Linq;
 
 // Alias needed: MAUI has its own built-in "MenuItem" class (used for app menus),
 // which collides with our own model of the same name. This line tells the
@@ -25,6 +26,11 @@ public partial class MainPage : ContentPage
         InitializeComponent();
     }
 
+    // Hardcoded for now — there's no restaurant-selection screen yet, so the
+    // app always shows this one restaurant's menu. This becomes a real setting
+    // once you build that screen, which is future scope, not today.
+    private const int RestaurantId = 2;
+
     // OnAppearing runs automatically every time this page becomes visible —
     // the MAUI equivalent of loadMenu() running as soon as script.js loaded.
     protected override async void OnAppearing()
@@ -35,30 +41,37 @@ public partial class MainPage : ContentPage
 
     private async Task LoadMenuAsync()
     {
-        // Make sure the local cache database file and its tables exist before we
-        // try to read from or write to it. EnsureCreated() is the "no migrations
-        // needed" version — safe to call every time, since it does nothing if the
-        // database already exists.
         using var localDb = new LocalDbContext();
         localDb.Database.EnsureCreated();
 
+        // If this cache file was created before RestaurantId existed on MenuItem,
+        // its schema won't match anymore, and any query against it will throw.
+        // Since this is disposable cache data — not the real source of truth,
+        // which lives on the server — the simplest fix is to wipe and recreate
+        // it, not patch its schema in place.
         try
         {
-            // Try the real server first — this is the "online" path.
-            var items = await _httpClient.GetFromJsonAsync<List<MenuItem>>("api/MenuItems");
+            _ = localDb.MenuItems.Any();
+        }
+        catch
+        {
+            localDb.Database.EnsureDeleted();
+            localDb.Database.EnsureCreated();
+        }
+
+        try
+        {
+            var items = await _httpClient.GetFromJsonAsync<List<MenuItem>>(
+                $"api/restaurants/{RestaurantId}/menuitems") ?? new List<MenuItem>();
+
             MenuCollectionView.ItemsSource = items;
 
-            // Got fresh data successfully — save a copy locally for next time there's
-            // no connection. Clear the old cache first so it doesn't just accumulate
-            // stale duplicates forever.
             localDb.MenuItems.RemoveRange(localDb.MenuItems);
             localDb.MenuItems.AddRange(items);
             await localDb.SaveChangesAsync();
         }
         catch (Exception)
         {
-            // The server request failed — fall back to whatever was saved last time,
-            // instead of showing nothing at all.
             var cachedItems = await localDb.MenuItems.ToListAsync();
 
             if (cachedItems.Count > 0)
