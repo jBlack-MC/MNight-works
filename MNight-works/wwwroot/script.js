@@ -4,9 +4,13 @@ const menuListElement = document.getElementById("menu-list");
 //"async function" is javaScript 's version of the async/await you already know from C# -
 //it lets this function pause at "await " without freezing the whole page
 async function loadMenu() {
+    // Hardcoded for now, same reasoning as the MAUI app — no restaurant-picker
+    // screen exists yet, so the site always shows this one restaurant's menu.
+    const restaurantId = 2;
+
     //fetch() sends an HTTP request.with no options, it defaults to GET
     //same idea as typing a URL into a browser, just done from code
-    const response = await fetch("/api/MenuItems");
+    const response = await fetch(`/api/restaurants/${restaurantId}/menuitems`);
 
     //fetch() only throws an error for things like network failures
     //A 404 or 500 still counts as "success" to fetch() so we check response.ok ourselves
@@ -64,7 +68,7 @@ addItemForm.addEventListener("submit", async event => {
         isAvailable: true
     };
 
-    const response = await fetch("/api/MenuItems", {
+    const response = await fetch(`/api/restaurants/${restaurantId}/menuitems`, {
         //fetch() defaults to GET, So post must be stated explicitly
         method: "POST",
         headers: {
