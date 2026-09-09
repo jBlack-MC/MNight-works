@@ -1,6 +1,14 @@
 # MNight-works
 
-Last updated: 2026-09-07
+Last updated: 2026-09-09
+
+Recent changes
+--------------
+- Added simple JWT authentication (AuthController) with register/login endpoints.
+- Introduced a User model and registered Users DbSet in the EF Core AppDbContext.
+- Linked Restaurant to an owner via OwnerId and a JsonIgnored Owner reference to avoid JSON cycles.
+- Added migrations to create the Users table.
+- Updated wwwroot/script.js to use restaurant-specific endpoints (hardcoded restaurantId = 2).
 
 Hybrid solution with an ASP.NET Core backend and a .NET MAUI mobile client.
 
