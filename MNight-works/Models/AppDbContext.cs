@@ -14,5 +14,8 @@ namespace MNight_works.Models
 
         // Register the Restaurants table so EF Core knows about the Restaurant entity
         public DbSet<Restaurant> Restaurants => Set<Restaurant>();
+
+        // Register the Users table so EF Core knows about the User entity
+        public DbSet<User> Users => Set<User>();
     }
 }
