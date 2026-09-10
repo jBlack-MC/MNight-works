@@ -1,10 +1,9 @@
-﻿using MNightWorks.Shared.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MNightWorks.Shared
+namespace MNightWorks.Shared.Models
 {
     public class Restaurant
     {
